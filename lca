@@ -1,0 +1,55 @@
+bool visited[100001];
+int dis[100001];
+int par[100001];
+int table[100001][100];
+int maxn=log2(100001);
+void dfs(int v,int p=-1)
+{
+  visited[v]=1;
+  if(p==-1)
+  dis[v]=0;
+  else
+  dis[v]=dis[p]+1;
+  par[v]=p;
+  table[v][0]=p;
+  for(auto it:adj[v])
+  {
+    if(!visited[it])
+    dfs(it,v);
+  }
+}
+void init()
+{
+  dfs(1);
+  for (int i = 1; i <=maxn; i++)
+  {
+    for (int j = 1; j <=n; j++)
+    {
+      if(table[j][i-1]!=-1)
+      {
+        int par=table[j][i-1];
+        table[j][i]=table[par][i-1];
+      }
+    }
+  }
+}
+int lcs_fast(int a,int b)
+{
+  if(dis[b]<dis[a])
+  swap(a,b);
+  int d=dis[b]-dis[a];
+  while(d>0)
+  {
+    int base=log2(d);
+    b=table[b][base];
+    d-=(1<<base);
+  }
+  if(a==b)
+  return a;
+  for(int i=maxn;i>=0;i--)
+  {
+     if(table[a][i]!=-1&&table[b][i]!=-1&&table[a][i]!=table[b][i])
+     a=table[a][i],b=table[b][i];
+  }
+  return par[a];
+}
