@@ -1,0 +1,27 @@
+// make in degree and the path vector outside this function 
+void alltopsort()
+{
+  bool ok=false;
+  for(int i=1;i<=n;i++)
+  {
+   if(!visited[i]&&indegree[i]==0)
+   {
+    for(auto it:adj[i])
+     indegree[it]--;
+     path.push_back(i);
+     visited[i]=true;
+     alltopsort();
+     visited[i]=false;
+     path.erase(path.end()-1);
+     for(auto it:adj[i])
+     indegree[it]++;
+     ok=true;
+   }
+  }
+  if(!ok)
+ {
+   for(auto it:path)
+   cout<<it<<" ";
+   cout<<endl;
+ }
+}
