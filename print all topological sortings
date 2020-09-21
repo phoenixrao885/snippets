@@ -1,4 +1,7 @@
-// make in degree and the path vector outside this function 
+// check if top sorting is possible or not
+vector<int> path;
+vector<vector<int>> allvalidtopsorts;
+int indegree[1000001];
 void alltopsort()
 {
   bool ok=false;
