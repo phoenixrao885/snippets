@@ -1,0 +1,122 @@
+vector<vector<int>> g, gr, ans;// g stores the original graph edges gr stores tht transposed graph edges and answer stores the ssc of grpah
+vector<bool> used;// another visited array used in dfs1 and dfs2
+vector<int> order, component;// stores the component and the order of first top sort
+vector<int> cond[100001]; // store the edges of the condensensation graph
+int noof[100001]; // stores to which ssc this node belongs
+int no = 1; // [no-1] at last gives the total no of ssc in graph
+int n, m; // no of nodes and no of edges
+vector<int> fakecond[100001]; //use when operation on condensastion graph
+vector<bool> fakevisited(100001); // use when operation on condensastion graph
+vector<pair<int, int>> edges; // stores the edges of the origanl graph 
+vector<int> top_order; // top sorting order
+vector<bool> visited(100011); // normal visited array
+void dfs(int v)
+{
+  fakevisited[v] = true;
+  for (int u : fakecond[v])
+  {
+    if (!fakevisited[u])
+      dfs(u);
+  }
+  top_order.push_back(v);
+}
+void topological_sort(int n)
+{
+  fakevisited.assign(100001, false);
+  top_order.clear();
+  for (int i = 1; i <= n; ++i)
+  {
+    if (!fakevisited[i])
+      dfs(i);
+  }
+  reverse(top_order.begin(), top_order.end());
+}
+void dfs3(int v, int p = -1)
+{
+  used[v] = 1;
+  for (auto it : g[v])
+  {
+    if (it == p)
+      continue;
+    else if (!used[it])
+      dfs3(it, v);
+  }
+}
+void dfs1(int v)
+{
+  used[v] = true;
+  for (size_t i = 0; i < g[v].size(); ++i)
+    if (!used[g[v][i]])
+      dfs1(g[v][i]);
+  order.push_back(v);
+}
+void dfs2(int v)
+{
+  used[v] = true;
+  component.push_back(v);
+  for (size_t i = 0; i < gr[v].size(); ++i)
+    if (!used[gr[v][i]])
+      dfs2(gr[v][i]);
+}
+void solve()
+{
+  cin >> n >> m;
+  g.resize(n + 11);
+  gr.resize(n + 11);
+  ans.resize(n + 11);
+  for (int i = 0; i < m; i++)
+  {
+    int a, b;
+    cin >> a >> b;
+    g[a].push_back(b);
+    gr[b].push_back(a);
+    edges.push_back({a, b});
+  }
+  used.assign(n + 11, false);
+  for (int i = 1; i <= n; ++i)
+    if (!used[i])
+      dfs1(i);// for teh top sort of original graph
+  used.assign(n + 11, false);
+  for (int i = 0; i < n; ++i)
+  {
+    int v = order[n - 1 - i];
+    if (!used[v])
+    {
+      dfs2(v); // finds one of component of ssc
+      ans.push_back(component);
+      for (auto it : component)
+        noof[it] = no;
+      no++;
+      component.clear();
+    }
+  }
+  // checking the edges if need to connect between two ssc
+  for (auto it : edges)
+  {
+    if (noof[it.first] != noof[it.second])
+    {
+      cond[noof[it.first]].push_back({noof[it.second]});
+    }
+  }
+  // make the edges of the ssc unique
+  for (int i = 1; i < no; i++)
+  {
+    if (cond[i].size() > 0)
+    {
+      sort(cond[i].begin(), cond[i].end());
+      auto to = unique(cond[i].begin(), cond[i].end());
+      cond[i].resize(distance(cond[i].begin(), to));
+    }
+  }
+  // ahead is for operation on condensastion graph
+  fakevisited.assign(100001, false);
+  for (int i = 1; i < no; i++)
+  {
+    for (auto it : cond[i])
+      fakecond[it].push_back(i);
+  }
+  // top sort of condensastion graph
+  topological_sort(no - 1);
+  fakevisited.assign(100001, false);
+
+}
