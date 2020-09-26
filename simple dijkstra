@@ -1,0 +1,26 @@
+ ll int n, m;
+vector<pair<ll int, ll int>> adj[100011];
+vector<ll int> dist(100001 + 1, 1e18);
+void simple_dijkstra()
+{
+  priority_queue<pair<ll int, ll int>, vector<pair<ll int, ll int>>, greater<pair<ll int, ll int>>> q;
+  
+  q.push({0ll, 1ll});
+  dist[1] = 0ll;
+  while (!q.empty())
+  {
+    ll int currnode = q.top().second;
+    ll int currdis = q.top().first;
+    q.pop();
+    if (dist[currnode] < currdis)
+      continue;
+    for (auto it : adj[currnode])
+    {
+      if (currdis + it.second < dist[it.first])
+      {
+        dist[it.first] = currdis + it.second;
+        q.push({dist[it.first], it.first});
+      }
+    }
+  }
+}
