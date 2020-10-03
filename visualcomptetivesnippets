@@ -166,8 +166,9 @@
 			"        fact[i] = (fact[i - 1] * i) % p; ",
 			"    } ",
 			"} ",
-			"ll Binomial(ll N, ll R, ll p) ",
+			"ll Binomial(ll N, ll R, ll p=MOD) ",
 			"{ ",
+			"  if(N<0||R<0||R>N) return 0;             ", 
 			"    ll ans = ((fact[N] * factorialNumInverse[R]) ",
 			"              % p * factorialNumInverse[N - R]) ",
 			"             % p; ",
@@ -229,7 +230,7 @@
 			"}",
 			"void changeElem(int x, int val)",
 			"{",
-			"update(x + 1, val - getValue(x));",
+			"update(x , val - getValue(x));",
 			"}",
 			"void scaleDown(int c)",
 			"{",
@@ -247,7 +248,7 @@
 		"description": "fenwick tree"
 	},
 	"temp1": {
-		"prefix": "temp1",
+		"prefix": "emp1",
 		"body": [
 			"using namespace std;",
 			"#include <bits/stdc++.h>",
@@ -571,4 +572,148 @@
 		],
 		"description": "finds lca in log(n) time"
 	}
+	,
+	"khan algo": {
+		"prefix": "topsortkhan",
+		"body": [
+		  "vector<int> top_order; ",
+		  "bool topologicalsort() ",
+		  "{ ",
+		  "vector<int> in_degree(n+1, 0); ",
+		  "for (int u = 1; u <=n; u++) { ",
+		  "for (auto itr = adj[u].begin(); ",
+		  "itr != adj[u].end(); itr++) ",
+		  "in_degree[*itr]++; ",
+		  "} ",
+		  "queue<int> q; ",
+		  "for (int i = 1; i <=n; i++) ",
+		  "if (in_degree[i] == 0) ",
+		  "q.push(i); ",
+		  "int cnt = 0; ",
+		  "while (!q.empty()) { ",
+		  "int u = q.front(); ",
+		  "q.pop(); ",
+		  "top_order.push_back(u); ",
+		  "for (auto itr = adj[u].begin(); ",
+		  "itr != adj[u].end(); itr++) ",
+		  "if (--in_degree[*itr] == 0) ",
+		  "q.push(*itr); ",
+		  "",
+		  "cnt++; ",
+		  "}",
+		  "  if(cnt!=n)",
+		  "  return false;",
+		  "  return true;",
+		  "} "
+		],
+		"description": "for khan algo for top sort"
+	  }
+	  ,
+	  "articulation points": {
+		"prefix": "articulationpoints",
+		"body": [
+		  "void dfs(int v, int p = -1) {",
+		  "    visited[v] = true;",
+		  "    in[v] = low[v] = timer++;",
+		  "    int children=0;",
+		  "    for (int to : adj[v]) {",
+		  "        if (to == p) continue;",
+		  "        if (visited[to]) {",
+		  "            low[v] = min(low[v], in[to]);",
+		  "        } else {",
+		  "            dfs(to, v);",
+		  "            low[v] = min(low[v], low[to]);",
+		  "            if (low[to] >= in[v] && p!=-1)",
+		  "                IS_CUTPOINT(v);",
+		  "            ++children;",
+		  "        }",
+		  "    }",
+		  "    if(p == -1 && children > 1)",
+		  "",
+		  "        IS_CUTPOINT(v);",
+		  "}"
+		],
+		"description": "cut points"
+	  }
+	  ,
+	  "bridges": {
+		"prefix": "bridges",
+		"body": [
+		  "void dfs(int v, int p = -1) {",
+		  "    visited[v] = true;",
+		  "    in[v] = low[v] = timer++;",
+		  "    for (int to : adj[v]) {",
+		  "        if (to == p) continue;",
+		  "        if (visited[to]) {",
+		  "            low[v] = min(low[v], in[to]);",
+		  "        } else {",
+		  "            dfs(to, v);",
+		  "            low[v] = min(low[v], low[to]);",
+		  "            if (low[to] > in[v])",
+		  "                IS_BRIDGE(v, to);",
+		  "        }",
+		  "    }",
+		  "}"
+		],
+		"description": "find all bridges"
+	  }
+	  ,
+	  "top sort cp algo approach": {
+		"prefix": "topsortall",
+		"body": [
+		  "vector<bool> visited(100011);",
+		  "void dfs(int v) {",
+		  "    visited[v] = true;",
+		  "    for (int u : adj[v]) {",
+		  "        if (!visited[u])",
+		  "            dfs(u);",
+		  "    }",
+		  "    top_order.push_back(v);",
+		  "}",
+		  "void topological_sort() {",
+		  "    visited.assign(n+1, false);",
+		  "    top_order.clear();",
+		  "    for (int i = 1; i <=n; ++i) {",
+		  "        if (!visited[i])",
+		  "            dfs(i);",
+		  "    }",
+		  "    reverse(top_order.begin(), top_order.end());",
+		  "}"
+		],
+		"description": "top sort which necessiarly contans all nodes"
+	  }
+	  ,
+	  "simplest imp of dijkstra": {
+		"prefix": "dijkstra",
+		"body": [
+		  "ll int n, m;",
+		  "vector<pair<ll int, ll int>> adj[100011];",
+		  "vector<ll int> dist(100001 + 1, 1e18);",
+		  "ll parent[100001];",
+		  "void simple_dijkstra()",
+		  "{",
+		  "  priority_queue<pair<ll int, ll int>, vector<pair<ll int, ll int>>, greater<pair<ll int, ll int>>> q;",
+		  "  q.push({0ll, 1ll});",
+		  "  dist[1] = 0ll;",
+		  "  while (!q.empty())",
+		  "  {",
+		  "    ll int currnode = q.top().second;",
+		  "    ll int currdis = q.top().first;",
+		  "    q.pop();",
+		  "    if (dist[currnode] < currdis)",
+		  "      continue;",
+		  "    for (auto it : adj[currnode])",
+		  "    {",
+		  "      if (currdis + it.second < dist[it.first])",
+		  "      {",
+		  "        dist[it.first] = currdis + it.second;",
+		  "        q.push({dist[it.first], it.first});",
+		  "        parent[it.first]=currnode;",
+		  "      }",
+		  "    }",
+		  "  }",
+		  "}"
+		],
+		"description": "dijkstral algorithm"
+	  }
 }
