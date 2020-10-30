@@ -99,7 +99,13 @@ int direction(point a, point b, point c)
     else
         return 0;
 }
-// for 2d bodies
+double distance_between_points(point a, point b)
+{
+    double val1 = (double)a.x - (double)b.x;
+    double val2 = (double)a.y - (double)b.y;
+    double val3 = (double)a.z - (double)b.z;
+    return sqrt(val1 * val1 + val2 * val2 + val3 * val3);
+}// for 2d bodies
 double area_of_polygon(point a[], int n)
 {
     double area = 0;
@@ -113,6 +119,7 @@ double area_of_polygon(point a[], int n)
 }
 bool check_point_in_polygon(point a[], int n, point p)
 {
+   // for convex polygons 
     int l = 1, r = n - 2;
     while (l < r)
     {
