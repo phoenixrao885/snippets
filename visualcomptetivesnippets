@@ -467,6 +467,7 @@
 	"debugerichto": {
 		"prefix": "debug",
 		"body": [
+			"// from radewoooooooshhhhh",
 			"#define sim template < class c",
 			"#define ris return * this",
 			"#define dor > debug & operator <<",
@@ -781,12 +782,20 @@
 		  "        return *this;",
 		  "    }",
 		  "",
-		  "    bool operator==(point b)",
+		  "    bool operator==(const point &b) const",
 		  "    {",
 		  "        if (this->x == b.x && this->y == b.y && this->z == b.z)",
 		  "            return true;",
 		  "        else",
 		  "            return false;",
+		  "    }",
+		  "    bool operator<(const point &a) const",
+		  "    {",
+		  "        if (this->x == a.x)",
+		  "        {",
+		  "            return this->y < a.y;",
+		  "        }",
+		  "        return this->x < a.x;",
 		  "    }",
 		  "};"
 		],
@@ -1169,5 +1178,92 @@
 		  "// not implemented due to precission errors with value of c here"
 		],
 		"description": "basic circle stuff"
+	  }
+	  ,
+	  "convex hull jarvis march": {
+		"prefix": "jarvismarch",
+		"body": [
+		  "vector<point> jarvis_march(vector<point> arr)",
+		  "{",
+		  "    // with no redundant points ",
+		  "// complexity =(no of points in hull)*(total no of points) ",
+		  "    int n = arr.size();",
+		  "    int start = 0;",
+		  "    for (int i = 1; i < n; i++)",
+		  "    {",
+		  "        if (arr[i].x < arr[start].x || (arr[i].x == arr[start].x && arr[i].y < arr[start].y))",
+		  "            start = i;",
+		  "    }",
+		  "    vector<point> ans;",
+		  "    ans.push_back(arr[start]);",
+		  "    while (1)",
+		  "    {",
+		  "        int pt = 0;",
+		  "        for (int i = 0; i < n; i++)",
+		  "        {",
+		  "            if (arr[i] == ans.back())",
+		  "                continue;",
+		  "            if ((direction(ans.back(), arr[pt], arr[i]) == -1) ||",
+		  "                (direction(ans.back(), arr[pt], arr[i]) == 0 &&",
+		  "                 dot(arr[i] - ans.back(), arr[i] - ans.back()) > dot(arr[pt] - ans.back(), arr[pt] - ans.back())))",
+		  "            {",
+		  "                pt = i;",
+		  "            }",
+		  "        }",
+		  "        if (arr[pt] == ans.front())",
+		  "            break;",
+		  "        else",
+		  "            ans.push_back(arr[pt]);",
+		  "    }",
+		  "    return ans;",
+		  "}"
+		],
+		"description": "jarvis march without redundant points"
+	  }
+	  ,
+	  "disjoint set union": {
+		"prefix": "dsu",
+		"body": [
+		  "// you know from where it is copied ",
+		  "class dsu",
+		  "{",
+		  "public:",
+		  "  vector<int> p;",
+		  "  int n;",
+		  "  dsu(int _n) : n(_n)",
+		  "  {",
+		  "    p.resize(n);",
+		  "    iota(p.begin(), p.end(), 0);",
+		  "  }",
+		  "  inline int get(int x)",
+		  "  {",
+		  "    return (x == p[x] ? x : (p[x] = get(p[x])));",
+		  "  }",
+		  "  inline bool unite(int x, int y)",
+		  "  {",
+		  "    x = get(x);",
+		  "    y = get(y);",
+		  "    if (x != y)",
+		  "    {",
+		  "      p[x] = y;",
+		  "      return true;",
+		  "    }",
+		  "    return false;",
+		  "  }",
+		  "};",
+		  ""
+		],
+		"description": "dsu with path compression"
+	  }
+	  ,
+	  "pbds": {
+		"prefix": "pbds",
+		"body": [
+		  "#include <ext/pb_ds/assoc_container.hpp>",
+		  "#include <ext/pb_ds/tree_policy.hpp>",
+		  "using namespace __gnu_pbds;",
+		  "#define ordered_set tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update>"
+		],
+		"description": "pbds"
 	  }
 }
