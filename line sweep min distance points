@@ -1,0 +1,211 @@
+using namespace std;
+#include <bits/stdc++.h>
+#define ll long long
+int f;
+class point
+{
+public:
+    ll x, y, z;
+    point(ll emp1 = 0, ll emp2 = 0, ll emp3 = 0)
+    {
+        x = emp1;
+        y = emp2;
+        z = emp3;
+    }
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(const point &b) const
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+    bool operator<(const point &a) const
+    {
+        if (this->x == a.x)
+        {
+            return this->y < a.y;
+        }
+        return this->x < a.x;
+    }
+};
+long long dot(point a, point b)
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+point cross(point a, point b)
+{
+    return point(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+}
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / sqrt(dot(a, a) * dot(b, b)));
+}
+double rad_to_deg(double val)
+{
+    return val * 180 / M_PI;
+}
+double deg_to_rad(double val)
+{
+    return val * M_PI / 180;
+}
+long long signed_area_of_parallelogram(point a, point b, point c)
+{
+    return cross(b - a, c - b).z;
+}
+double area_of_triangle(point a, point b, point c)
+{
+    return abs(signed_area_of_parallelogram(a, b, c) / 2.0);
+}
+int direction(point a, point b, point c)
+{
+    long long t = signed_area_of_parallelogram(a, b, c);
+
+    if (t < 0)
+        return -1;
+    else if (t > 0)
+        return 1;
+    else
+        return 0;
+}
+double distance_between_points(point a, point b)
+{
+    double val1 = (double)a.x - (double)b.x;
+    double val2 = (double)a.y - (double)b.y;
+    double val3 = (double)a.z - (double)b.z;
+    return sqrt(val1 * val1 + val2 * val2 + val3 * val3);
+}
+class loda
+{
+public:
+    set<point> st;
+    priority_queue<point> q;
+    ll d = 1e18;
+    void insert(point a)
+    {
+        q.push(point(-a.x, a.y));
+        st.insert(point(a.y, a.x));
+    }
+    void del(point a)
+    {
+        while (-q.top().x < a.x - d)
+        {
+            auto it = st.find(point(q.top().y, -q.top().x));
+            st.erase(it);
+            q.pop();
+            return;
+        }
+    }
+    vector<point> query(point a)
+    {
+        auto it = st.lower_bound(point(a.y - d, 0));
+        auto itt = st.upper_bound(point(a.y + d, a.x));
+        vector<point> ans;
+        while (it != itt)
+        {
+            ans.push_back(point((*it).y, (*it).x));
+            it++;
+        }
+        return ans;
+    }
+};
+void solve()
+{
+    int n;
+    cin >> n;
+    vector<point> v(n);
+    map<pair<int, int>, int> mp;
+    for (int i = 0; i < n; i++)
+    {
+        int a, b;
+        cin >> a >> b;
+        mp[{a, b}] = i;
+        v[i] = point(a, b);
+    }
+    sort(v.begin(), v.end());
+    double ans = 1e18;
+    loda l;
+    l.insert(v[0]);
+    pair<int, int> pt;
+    for (int i = 1; i < n; i++)
+    {
+        l.insert(v[i]);
+        l.del(v[i]);
+        vector<point> ch = l.query(v[i]);
+        // for (auto it : ch)
+        //     cerr << it.x << " " << it.y << endl;
+        // cerr << endl;
+        for (int j = 0; j < (int)ch.size(); j++)
+        {
+            if (ch[j].x == v[i].x && ch[j].y == v[i].y)
+                continue;
+            else
+            {
+                if (ans > distance_between_points(ch[j], v[i]))
+                {
+                    pt.first = min(mp[{ch[j].x, ch[j].y}], mp[{v[i].x, v[i].y}]);
+                    pt.second = max(mp[{ch[j].x, ch[j].y}], mp[{v[i].x, v[i].y}]);
+                }
+                ans = min(ans, distance_between_points(ch[j], v[i]));
+            }
+        }
+        l.d = min(l.d, (ll)(ans + 1));
+    }
+    cout << fixed << setprecision(6);
+    cout << pt.first << " " << pt.second << " " << ans << endl;
+}
+int main()
+{
+    // #ifndef ONLINE_JUDGE
+    //     freopen("input.txt", "r", stdin);
+    //     freopen("output.txt", "w", stdout);
+    // #endif
+    int t = 1;
+    // cin >> t;
+    while (t--)
+        solve();
+    return 0;
+}
