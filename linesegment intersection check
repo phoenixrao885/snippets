@@ -1,0 +1,178 @@
+using namespace std;
+#include <bits/stdc++.h>
+class point
+{
+public:
+    long long x, y, z;
+    void read()
+    {
+        cin >> x >> y;
+    }
+    point(long long emp1 = 0, long long emp2 = 0, long long emp3 = 0)
+    {
+        x = emp1;
+        y = emp2;
+        z = emp3;
+    }
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(const point &b) const
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+    bool operator<(const point &a) const
+    {
+        if (this->x == a.x)
+        {
+            return this->y < a.y;
+        }
+        return this->x < a.x;
+    }
+};
+long long dot(point a, point b)
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+point cross(point a, point b)
+{
+    return point(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+}
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / sqrt(dot(a, a) * dot(b, b)));
+}
+double rad_to_deg(double val)
+{
+    return val * 180 / M_PI;
+}
+double deg_to_rad(double val)
+{
+    return val * M_PI / 180;
+}
+long long signed_area_of_parallelogram(point a, point b, point c)
+{
+    return cross(b - a, c - b).z;
+}
+double area_of_triangle(point a, point b, point c)
+{
+    return abs(signed_area_of_parallelogram(a, b, c) / 2.0);
+}
+int direction(point a, point b, point c)
+{
+    long long t = signed_area_of_parallelogram(a, b, c);
+    if (t < 0)
+        return -1;
+    else if (t > 0)
+        return 1;
+    else
+        return 0;
+}
+double distance_between_points(point a, point b)
+{
+    double val1 = (double)a.x - (double)b.x;
+    double val2 = (double)a.y - (double)b.y;
+    double val3 = (double)a.z - (double)b.z;
+    return sqrt(val1 * val1 + val2 * val2 + val3 * val3);
+}
+void solve()
+{
+    point a, b, c, d;
+    a.read();
+    b.read();
+    c.read();
+    d.read();
+    // parlell and non parlell
+    if (cross(b - a, d - c) == 0)
+    {
+        if (direction(a, b, c) != 0)
+        {
+            cout << "NO" << endl;
+            return;
+        }
+        else
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                if (max(a.x, b.x) < min(c.x, d.x) || (max(a.y, b.y) < min(c.y, d.y)))
+                {
+                    cout << "NO" << endl;
+                    return;
+                }
+                swap(a, c);
+                swap(b, d);
+            }
+            cout << "YES" << endl;
+        }
+    }
+    else
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            if ((direction(a, b, c) > 0 && direction(a, b, d) > 0) || (direction(a, b, c) < 0 && direction(a, b, d) < 0))
+            {
+                cout << "NO" << endl;
+                return;
+            }
+            swap(a, c);
+            swap(b, d);
+        }
+        cout << "YES" << endl;
+    }
+}
+int main()
+{
+#ifndef ONLINE_JUDGE
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+#endif
+    int t = 1;
+    cin >> t;
+    while (t--)
+        solve();
+    return 0;
+}
